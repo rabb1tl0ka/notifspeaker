@@ -36,6 +36,8 @@ def msg_cb(bus, msg):
             notification_str = f"{summary} says. {body}"
         if "Spotify" in notification_from:
             notification_str = f"You are listening to {body} {summary}"
+        if "google.calendar.com" in body:
+            body = body.replace("calendar.google.com").strip()
         else:
             notification_str = f"via {notification_from}. {summary}. {body}"
 
