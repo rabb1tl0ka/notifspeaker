@@ -9,7 +9,7 @@ It supports AWS Polly, espeak and say.
 - Choose between espeak and say for speech synthesis
 - Press ESC if you can to stop reading the notification (good for long notifications...)
 - Ignore notifications based on a summary list
-- Support AWS Polly
+- Support AWS Polly. It saves an mp3 file in the local folder so no need to use an S3 bucket!
 
 
 ## Installation
@@ -47,7 +47,7 @@ It supports AWS Polly, espeak and say.
    You have to install AWS CLI and then create a user, give it access to AWS Polly and also access keys.
 
    Here's an example:
-   
+
    ```
    aws configure
 
