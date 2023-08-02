@@ -8,9 +8,30 @@ from gi.repository import GLib
 from dbus.mainloop.glib import DBusGMainLoop
 import queue
 from pynput import keyboard
+import pygame
+import os
+import hashlib
 
 ignore_notif_summary = [] # array of summary strings to ignore
 ignore_notif_from = [] # array of origin strings to ignore
+
+def hash_string(input_string):
+    sha256_hash = hashlib.sha256()
+    sha256_hash.update(input_string.encode('utf-8'))
+    return sha256_hash.hexdigest()
+
+def play_mp3(mp3file):
+    # Play the generated MP3 file
+    pygame.mixer.init()
+    pygame.mixer.music.load(mp3file)
+    pygame.mixer.music.play()
+
+    # Wait for playback to finish
+    while pygame.mixer.music.get_busy():
+        pygame.time.Clock().tick(10)
+
+    # Delete the file after playback
+    os.remove(mp3file)
 
 notification_queue = queue.Queue()  # Queue to hold notification strings
 
@@ -53,8 +74,20 @@ def msg_cb(bus, msg):
         notification_queue.put(notification_str)
 
 def process_notification(notification_str, speechapp):
+    mp3filename = ""
+
     if speechapp == "say":
         speak_command = ["say", notification_str]
+    elif speechapp == "polly":
+        mp3filename = hash_string(notification_str) + "output.mp3"
+        
+        speak_command = [
+            'aws', 'polly', 'synthesize-speech',
+            '--output-format', 'mp3',
+            '--text', notification_str,
+            '--voice-id', voice_id,
+            mp3filename
+        ]
     elif speechapp == "espeak":
         espeak_parameters = ["-s", "200", "-g", "2", "-p", "40"]
         speak_command = ["espeak", *espeak_parameters, notification_str]
@@ -75,6 +108,9 @@ def process_notification(notification_str, speechapp):
     # Wait for the speak process to finish
     # so we don't play more than 1 notification at a time.
     speak_process.wait()
+
+    if speechapp == "polly":
+        play_mp3(mp3filename)
 
     keyboard_listener.stop()
 
@@ -107,6 +143,10 @@ def read_config():
     ignore_notif_from = config.get('Settings', 'ignore_notif_from').split(', ')
     print(ignore_notif_from)
 
+    global voice_id 
+    voice_id= config.get('Settings', 'voice_id', fallback="Brian")
+
+
 def main(speechapp):
     read_config()
 
@@ -131,7 +171,7 @@ def main(speechapp):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Read notifications using espeak or say.')
-    parser.add_argument('speechapp', choices=['espeak', 'say'], help='Choose the speech synthesis utility (espeak or say).')
+    parser.add_argument('speechapp', choices=['espeak', 'say', 'polly'], help='Choose the speech synthesis utility (espeak, say or Amazon Polly).')
     args = parser.parse_args()
 
     main(args.speechapp)

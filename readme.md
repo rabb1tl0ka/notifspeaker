@@ -1,6 +1,7 @@
 # Notification Speech Reader
 
 This is a Python program that reads out notifications using speech synthesis on Linux.
+It supports AWS Polly, espeak and say.
 
 ## Features
 
@@ -8,6 +9,7 @@ This is a Python program that reads out notifications using speech synthesis on 
 - Choose between espeak and say for speech synthesis
 - Press ESC if you can to stop reading the notification (good for long notifications...)
 - Ignore notifications based on a summary list
+- Support AWS Polly
 
 
 ## Installation
@@ -38,20 +40,31 @@ This is a Python program that reads out notifications using speech synthesis on 
    [Settings]
    ignore_notif_summary = some summary, another summary
    ignore_notif_from = Spotify
+   polly_voice_id = "Brian"
    ```
+6. If you want to use AWS Polly (https://aws.amazon.com/polly/)
+
+   You have to install AWS CLI and then create a user, give it access to AWS Polly and also access keys.
+
+   Here's an example:
+   
+   ```
+   aws configure
+
+   AWS Access Key ID [****************SYUH]: 
+   AWS Secret Access Key [****************vPA4]: 
+   Default region name [eu-west-1]: 
+   Default output format [JSON]: None
+   ```
+
+   After you run aws configure, you have to 
 
 ## Usage
 
 Run the program using the following command:
 
 ```
-python3 main.py say
-```
-
-or
-
-```
-python3 main.py espeak
+python3 main.py polly 
 ```
 
 **Notes**: Change python3 for the python version installed on your system.
