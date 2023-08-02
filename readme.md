@@ -17,13 +17,13 @@ This is a Python program that reads out notifications using speech synthesis on 
 2. Clone this repository:
 
    ```
-   git clone https://github.com/rabb1tl0ka/notification-speech-reader.git
+   git clone https://github.com/rabb1tl0ka/notifspeaker.git
    ```
 
 3. Navigate to the cloned directory:
 
    ```
-   cd notification-speech-reader
+   cd notifspeaker
    ```
 
 4. Install the required Python dependencies:
@@ -32,7 +32,13 @@ This is a Python program that reads out notifications using speech synthesis on 
    pip install -r requirements.txt
    ```
 
-   **Note**: The program also relies on external command-line utilities `espeak` and `festival` for speech synthesis. Make sure these utilities are installed on your system.
+5. Create a config.ini file
+
+   ```
+   [Settings]
+   ignore_notif_summary = some summary, another summary
+   ignore_notif_from = Spotify
+   ```
 
 ## Usage
 
@@ -49,13 +55,7 @@ python3 main.py espeak
 ```
 
 **Notes**: Change python3 for the python version installed on your system.
-    
-Create a config.ini file if you want to configure the summaries to be ignored.
 
-```
-[Settings]
-ignore_notif_summary = summary1, summary2
-```
 
 ## Contributing
 
