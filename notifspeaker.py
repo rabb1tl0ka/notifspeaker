@@ -10,6 +10,7 @@ import queue
 from pynput import keyboard
 
 ignore_notif_summary = [] # array of summary strings to ignore
+ignore_notif_from = [] # array of origin strings to ignore
 
 notification_queue = queue.Queue()  # Queue to hold notification strings
 
@@ -29,6 +30,11 @@ def msg_cb(bus, msg):
         global ignore_notif_summary
         if summary in ignore_notif_summary:
             print(f"!ignoring {summary}")
+            return
+        
+        global ignore_notif_from
+        if notification_from in ignore_notif_from:
+            print(f"!ignoring {notification_from}")
             return
 
         if notification_from == "Slack":
@@ -86,8 +92,6 @@ def speak_processor(speechapp):
             # to avoid busy waiting
             pass
 
-
-
 def read_config():
     # Check if the config file exists
     if os.path.exists('config.ini'):
@@ -96,9 +100,12 @@ def read_config():
         config.read('config.ini')
 
     global ignore_notif_summary
-    # Get the string array from the config file and assign it to the global variable
     ignore_notif_summary = config.get('Settings', 'ignore_notif_summary').split(', ')
     print(ignore_notif_summary)
+
+    global ignore_notif_from
+    ignore_notif_from = config.get('Settings', 'ignore_notif_from').split(', ')
+    print(ignore_notif_from)
 
 def main(speechapp):
     read_config()
