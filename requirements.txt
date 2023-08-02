@@ -1,0 +1,4 @@
+pygobject
+pynput
+espeak
+festival
