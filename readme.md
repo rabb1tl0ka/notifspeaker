@@ -7,6 +7,7 @@ This is a Python program that reads out notifications using speech synthesis on 
 - Reads out incoming notifications using speech synthesis.
 - Choose between espeak and say for speech synthesis
 - Press ESC if you can to stop reading the notification (good for long notifications...)
+- Ignore notifications based on a summary list
 
 
 ## Installation
@@ -47,7 +48,14 @@ or
 python3 main.py espeak
 ```
 
-**Note**: change python3 for the python version installed on your system
+**Notes**: Change python3 for the python version installed on your system.
+    
+Create a config.ini file if you want to configure the summaries to be ignored.
+
+```
+[Settings]
+ignore_notif_summary = summary1, summary2
+```
 
 ## Contributing
 

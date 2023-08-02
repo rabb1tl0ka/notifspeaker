@@ -1,4 +1,5 @@
- #pip install pynput
+import os
+import configparser
 import argparse
 import dbus
 import subprocess
@@ -7,6 +8,8 @@ from gi.repository import GLib
 from dbus.mainloop.glib import DBusGMainLoop
 import queue
 from pynput import keyboard
+
+ignore_notif_summary = [] # array of summary strings to ignore
 
 notification_queue = queue.Queue()  # Queue to hold notification strings
 
@@ -22,6 +25,11 @@ def msg_cb(bus, msg):
         notification_from = args[0]
         summary = args[3]
         body = args[4]
+
+        global ignore_notif_summary
+        if summary in ignore_notif_summary:
+            print(f"!ignoring {summary}")
+            return
 
         if notification_from == "Slack":
             summary = summary.replace("[lokahq] from ", "").strip()
@@ -76,7 +84,23 @@ def speak_processor(speechapp):
             # to avoid busy waiting
             pass
 
+
+
+def read_config():
+    # Check if the config file exists
+    if os.path.exists('config.ini'):
+        # Read the config file
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+
+    global ignore_notif_summary
+    # Get the string array from the config file and assign it to the global variable
+    ignore_notif_summary = config.get('Settings', 'ignore_notif_summary').split(', ')
+    print(ignore_notif_summary)
+
 def main(speechapp):
+    read_config()
+
     DBusGMainLoop(set_as_default=True)
     bus = dbus.SessionBus()
 
