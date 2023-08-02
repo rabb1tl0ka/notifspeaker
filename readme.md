@@ -1,4 +1,3 @@
-```markdown
 # Notification Speech Reader
 
 This is a Python program that reads out notifications using speech synthesis on Linux.
@@ -57,4 +56,3 @@ Contributions are welcome! If you find a bug or want to suggest an improvement, 
 ## License
 
 This project is licensed under the MIT License.
-```
