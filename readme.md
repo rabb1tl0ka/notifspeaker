@@ -1,15 +1,23 @@
 # Notification Speech Reader
 
-This is a Python program that reads out notifications using speech synthesis on Linux.
-It supports AWS Polly, espeak and say.
+notifspeaker.py is a versatile Python program designed to enhance your Linux desktop experience by seamlessly integrating speech synthesis for notifications. This lightweight and user-friendly tool empowers you to listen for notification alerts using various speech synthesis engines, including AWS Polly, espeak, and say.
 
 ## Features
 
-- Reads out incoming notifications using speech synthesis.
-- Choose between espeak and say for speech synthesis
-- Press ESC if you can to stop reading the notification (good for long notifications...)
-- Ignore notifications based on a summary list
-- Support AWS Polly. It saves an mp3 file in the local folder so no need to use an S3 bucket!
+
+- **Cross-Speech Synthesis Engine Compatibility:** Support for multiple speech synthesis engines, allowing you to choose the one that best suits your preferences and system setup.
+
+- **Notification Queueing:** Bye bye overlapping notifications that create chaos. notifspeaker.py queues incoming notificationsno matter how fast they come your way.
+
+- **Notification Skipping:** Take control of your workflow. Choose to bypass lengthy notifications with notifspeaker.py. Maintain uninterrupted efficiency by effortlessly skipping long notifications.
+
+- **Selective Notification Filtering:** Stay focused! notifspeaker.py empowers you to cherry-pick which notification summaries and body text to exclude. Tailor your experience to focus on what truly matters.
+
+- **Customizable Alerts:** Easily configure the speech rate, pitch, volume, and language to ensure notifications are delivered just the way you want them.
+
+- **Efficient and Lightweight:** Designed with efficiency in mind, ensuring minimal resource consumption by even removing any mp3 files created (eg. in the case of Polly) after it is done playing them.
+
+- **Open-Source and Extendable:** Help make it better by contributing and expanding this from Linux to other OS.
 
 
 ## Installation
@@ -56,8 +64,6 @@ It supports AWS Polly, espeak and say.
    Default region name [eu-west-1]: 
    Default output format [JSON]: None
    ```
-
-   After you run aws configure, you have to 
 
 ## Usage
 
