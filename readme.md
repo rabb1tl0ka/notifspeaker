@@ -70,7 +70,7 @@ notifspeaker.py is a versatile Python program designed to enhance your Linux des
 Run the program using the following command:
 
 ```
-python3 main.py polly 
+python3 notifspeaker.py polly
 ```
 
 **Notes**: Change python3 for the python version installed on your system.
