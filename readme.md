@@ -7,7 +7,7 @@ notifspeaker.py is a versatile Python program designed to enhance your Linux des
 
 - **Cross-Speech Synthesis Engine Compatibility:** Support for multiple speech synthesis engines, allowing you to choose the one that best suits your preferences and system setup.
 
-- **Notification Queueing:** Bye bye overlapping notifications that create chaos. notifspeaker.py queues incoming notificationsno matter how fast they come your way.
+- **Notification Queueing:** Bye bye overlapping notifications that create chaos. notifspeaker.py queues incoming notifications no matter how fast they come your way.
 
 - **Notification Skipping:** Take control of your workflow. Choose to bypass lengthy notifications with notifspeaker.py. Maintain uninterrupted efficiency by effortlessly skipping long notifications.
 
