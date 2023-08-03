@@ -14,6 +14,7 @@ import hashlib
 
 ignore_notif_summary = [] # array of summary strings to ignore
 ignore_notif_from = [] # array of origin strings to ignore
+notification_queue = queue.Queue()  # Queue to hold notification strings
 
 def hash_string(input_string):
     sha256_hash = hashlib.sha256()
@@ -33,7 +34,6 @@ def play_mp3(mp3file):
     # Delete the file after playback
     os.remove(mp3file)
 
-notification_queue = queue.Queue()  # Queue to hold notification strings
 
 def msg_cb(bus, msg):
     if msg.get_interface() == 'org.freedesktop.Notifications' and msg.get_member() == 'Notify':
@@ -97,9 +97,14 @@ def process_notification(notification_str, speechapp):
     # Create a keyboard listener to detect when the ESC key is pressed
     def on_press(key):
         if key == keyboard.Key.esc:
-            # Terminate the speak process if the ESC key is pressed
-            speak_process.terminate()
-            speak_process.wait()
+            print("Reader interrupt!")
+            if speechapp == "polly":
+                # There's no thread here. Just stop the mp3 player.
+                pygame.mixer.music.stop()
+            else:
+                # Terminate the speak process if the ESC key is pressed
+                speak_process.terminate()
+                speak_process.wait()
 
     # Start the keyboard listener in a separate thread
     keyboard_listener = keyboard.Listener(on_press=on_press)
@@ -110,6 +115,8 @@ def process_notification(notification_str, speechapp):
     speak_process.wait()
 
     if speechapp == "polly":
+        # In the case of polly, the speak_process just creates the mp3 file. 
+        # now we have to play it!
         play_mp3(mp3filename)
 
     keyboard_listener.stop()
