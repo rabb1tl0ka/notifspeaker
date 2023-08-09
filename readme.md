@@ -46,6 +46,7 @@ notifspeaker.py is a versatile Python program designed to enhance your Linux des
 
    ```
    [Settings]
+   slack_server_names = slackserver_name1, slackserver_name2
    ignore_notif_summary = some summary, another summary
    ignore_notif_from = Spotify
    polly_voice_id = "Brian"
