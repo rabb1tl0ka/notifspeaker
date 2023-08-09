@@ -64,33 +64,30 @@ def msg_cb(bus, msg):
 
         if notification_from == "Slack":
             for slack_server in slack_server_names:
-                if f"[{slack_server}] from " in summary:
-                    summary = summary.replace(f"[{slack_server}] from ", "").strip()
+                slack_server_from = f"[{slack_server}] from "
+                slack_server_in = f"[{slack_server}] in "
+
+                if slack_server_from in summary:
+                    summary = summary.replace(slack_server_from, "").strip()
                     notification_str = f"{summary} says: {body}"
                     break
-                if "[{slack_server}] in " in summary:
-                    summary = summary.replace(f"[{slack_server}] in ", "").strip()
+                if slack_server_in in summary:
+                    summary = summary.replace(slack_server_in, "").strip()
                     notification_str = f"{body} in {summary}"
                     break
-
-        if "Spotify" in notification_from:
+        elif "Spotify" in notification_from:
             notification_str = f"You are listening to {body} {summary}"
-
-        if "calendar.google.com" in body:
-            body = body.replace("calendar.google.com").strip()
+        elif "calendar.google.com" in body:
             notification_str = f"{summary} is coming up! From {body}"
-            
         else:
             notification_str = f"{body} via {notification_from} {summary}."
 
-        
-        print(f"Final text: {notification_str}")
+
         # Put the notification string in the queue
         notification_queue.put(notification_str)
 
 
 def process_notification(notification_str, speechapp):
-    print("process_notification start with: "+notification_str)
     mp3filename = ""
 
     if speechapp == "say":
