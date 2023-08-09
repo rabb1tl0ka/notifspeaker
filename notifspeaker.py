@@ -15,6 +15,7 @@ import hashlib
 ignore_notif_summary = [] # array of summary strings to ignore
 ignore_notif_from = [] # array of origin strings to ignore
 notification_queue = queue.Queue()  # Queue to hold notification strings
+slack_server_names = None
 
 def hash_string(input_string):
     sha256_hash = hashlib.sha256()
@@ -36,6 +37,7 @@ def play_mp3(mp3file):
 
 
 def msg_cb(bus, msg):
+    # Don't try to print 'msg'. It's impossible and it will break the program.
     if msg.get_interface() == 'org.freedesktop.Notifications' and msg.get_member() == 'Notify':
         args = msg.get_args_list()
 
@@ -43,38 +45,52 @@ def msg_cb(bus, msg):
         pid = args[6].get("sender-pid")
         if pid == None:
             return
- 
+
         notification_from = args[0]
         summary = args[3]
         body = args[4]
 
         global ignore_notif_summary
         if summary in ignore_notif_summary:
-            print(f"!ignoring {summary}")
             return
         
         global ignore_notif_from
         if notification_from in ignore_notif_from:
-            print(f"!ignoring {notification_from}")
             return
+        
+        print(f"PID: {pid}\nF: {notification_from}\nS: {summary}\nB: {body}")
+
+        global slack_server_names
 
         if notification_from == "Slack":
-            summary = summary.replace("[lokahq] from ", "").strip()
-            notification_str = f"{summary} says. {body}"
+            for slack_server in slack_server_names:
+                if f"[{slack_server}] from " in summary:
+                    summary = summary.replace(f"[{slack_server}] from ", "").strip()
+                    notification_str = f"{summary} says: {body}"
+                    break
+                if "[{slack_server}] in " in summary:
+                    summary = summary.replace(f"[{slack_server}] in ", "").strip()
+                    notification_str = f"{body} in {summary}"
+                    break
+
         if "Spotify" in notification_from:
             notification_str = f"You are listening to {body} {summary}"
+
         if "calendar.google.com" in body:
             body = body.replace("calendar.google.com").strip()
             notification_str = f"{summary} is coming up! From {body}"
+            
         else:
-            notification_str = f"via {notification_from}. {summary}. {body}"
+            notification_str = f"{body} via {notification_from} {summary}."
 
-        print(f"PID: {pid}\nF: {notification_from}\nS: {summary}\nB: {body}")
-
+        
+        print(f"Final text: {notification_str}")
         # Put the notification string in the queue
         notification_queue.put(notification_str)
 
+
 def process_notification(notification_str, speechapp):
+    print("process_notification start with: "+notification_str)
     mp3filename = ""
 
     if speechapp == "say":
@@ -101,8 +117,10 @@ def process_notification(notification_str, speechapp):
             print("Reader interrupt!")
             if speechapp == "polly":
                 # There's no thread here. Just stop the mp3 player.
+                print("Stopping polly player")
                 pygame.mixer.music.stop()
             else:
+                print("Terminate the speak process if the ESC key is pressed")
                 # Terminate the speak process if the ESC key is pressed
                 speak_process.terminate()
                 speak_process.wait()
@@ -120,7 +138,10 @@ def process_notification(notification_str, speechapp):
         # now we have to play it!
         play_mp3(mp3filename)
 
+    print("Stopping the keyboard listener")
     keyboard_listener.stop()
+
+    print("process_notification done")
 
 def speak_processor(speechapp):
     while True:
@@ -135,13 +156,15 @@ def speak_processor(speechapp):
             # If the queue is empty, sleep for a short duration
             # to avoid busy waiting
             pass
+    
 
 def read_config():
-    # Check if the config file exists
-    if os.path.exists('config.ini'):
-        # Read the config file
-        config = configparser.ConfigParser()
-        config.read('config.ini')
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
+    global slack_server_names
+    slack_server_names = config.get('Settings', 'slack_server_names').split(', ')
+    print(slack_server_names)
 
     global ignore_notif_summary
     ignore_notif_summary = config.get('Settings', 'ignore_notif_summary').split(', ')
@@ -163,7 +186,7 @@ def main(speechapp):
 
     obj_dbus = bus.get_object('org.freedesktop.DBus',
                               '/org/freedesktop/DBus')
-    
+
     obj_dbus.BecomeMonitor(["interface='org.freedesktop.Notifications'"],
                            dbus.UInt32(0),
                            interface='org.freedesktop.Notifications')
@@ -176,6 +199,8 @@ def main(speechapp):
 
     mainloop = GLib.MainLoop()
     mainloop.run()
+    print("Done")
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Read notifications using espeak or say.')
