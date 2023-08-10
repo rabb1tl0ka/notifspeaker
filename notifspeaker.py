@@ -69,12 +69,12 @@ def msg_cb(bus, msg):
 
                 if slack_server_from in summary:
                     summary = summary.replace(slack_server_from, "").strip()
-                    notification_str = f"{summary} says: {body}"
-                    break
-                if slack_server_in in summary:
+                    
+                elif slack_server_in in summary:
                     summary = summary.replace(slack_server_in, "").strip()
-                    notification_str = f"{body} in {summary}"
-                    break
+                    
+                notification_str = f"{summary} says: {body}"
+                
         elif "Spotify" in notification_from:
             notification_str = f"You are listening to {body} {summary}"
         elif "calendar.google.com" in body:
