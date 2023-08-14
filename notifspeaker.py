@@ -79,6 +79,10 @@ def msg_cb(bus, msg):
             notification_str = f"You are listening to {body} {summary}"
         elif "calendar.google.com" in body:
             notification_str = f"{summary} is coming up! From {body}"
+        elif "mail.google.com" in body:
+            # Google Chat
+            body = body.replace("mail.google.com", "").strip()
+            notification_str = f"{summary} says: {body}"
         else:
             notification_str = f"{body} via {notification_from} {summary}."
 
