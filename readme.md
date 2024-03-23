@@ -67,7 +67,11 @@ notifspeaker.py is a versatile Python program designed to enhance your Linux des
    Default region name [eu-west-1]: 
    Default output format [JSON]: None
    ```
-
+7. OPTIONAL: create an alias to execute this program anywhere you are.
+   ```
+    alias notifspeaker='cd ~/code/notifspeaker && source .venv/bin/activate && python3 notifspeaker.py polly'
+   ```
+ 
 ## Usage
 
 Run the program using the following command:
