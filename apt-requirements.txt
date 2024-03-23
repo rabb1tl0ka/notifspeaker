@@ -1,0 +1,6 @@
+libcairo2-dev
+pkg-config
+python3-dev
+gobject-introspection
+libgirepository1.0-dev
+libdbus-1-dev

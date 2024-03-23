@@ -1,5 +1,7 @@
 pygobject
 pynput
-espeak
-festival
+pygame
+dbus-python
+PyGObject
+pynput
 pygame

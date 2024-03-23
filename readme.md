@@ -30,17 +30,19 @@ notifspeaker.py is a versatile Python program designed to enhance your Linux des
    git clone https://github.com/rabb1tl0ka/notifspeaker.git
    ```
 
-3. Navigate to the cloned directory:
+3. Navigate to the cloned directory and install the apt requirements:
 
    ```
    cd notifspeaker
+   ./install-apt-requirements.sh
    ```
 
 4. Install the required Python dependencies:
 
    ```
-   pip install -r requirements.txt
+   ./install-requirements.sh
    ```
+   NOTE> make sure you were able to create a virtual environment.
 
 5. Create a config.ini file
 
