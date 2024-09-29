@@ -2,3 +2,4 @@ config.ini
 .vscode
 *.mp3
 .venv*
+env/

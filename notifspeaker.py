@@ -41,6 +41,10 @@ def msg_cb(bus, msg):
     if msg.get_interface() == 'org.freedesktop.Notifications' and msg.get_member() == 'Notify':
         args = msg.get_args_list()
 
+        if args[6].get("x-shell-sender") != None:
+            print("Notification is from x-shell-sender, likely a duplicate.")
+            return
+
         # If there's no PID then just forget about it. Read this in NYC Mafia style tone for extra impact.
         pid = args[6].get("sender-pid")
         if pid == None:
