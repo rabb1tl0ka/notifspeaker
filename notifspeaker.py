@@ -35,6 +35,7 @@ def play_mp3(mp3file):
     # Delete the file after playback
     os.remove(mp3file)
 
+lastmsg_summary = ""
 
 def msg_cb(bus, msg):
     # Don't try to print 'msg'. It's impossible and it will break the program.
@@ -65,6 +66,7 @@ def msg_cb(bus, msg):
         print(f"PID: {pid}\nF: {notification_from}\nS: {summary}\nB: {body}")
 
         global slack_server_names
+        global lastmsg_summary
 
         if notification_from == "Slack":
             for slack_server in slack_server_names:
@@ -76,8 +78,12 @@ def msg_cb(bus, msg):
                     
                 elif slack_server_in in summary:
                     summary = summary.replace(slack_server_in, "").strip()
+
+                if lastmsg_summary != summary: 
+                    notification_str = f"{summary} says: {body}"
+                else:
+                    notification_str = body
                     
-                notification_str = f"{summary} says: {body}"
                 
         elif "Spotify" in notification_from:
             notification_str = f"You are listening to {body} {summary}"
@@ -93,6 +99,9 @@ def msg_cb(bus, msg):
 
         # Put the notification string in the queue
         notification_queue.put(notification_str)
+
+        # saving last summary
+        lastmsg_summary = args[3]
 
 
 def process_notification(notification_str, speechapp):
