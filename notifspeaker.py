@@ -42,10 +42,6 @@ def msg_cb(bus, msg):
     if msg.get_interface() == 'org.freedesktop.Notifications' and msg.get_member() == 'Notify':
         args = msg.get_args_list()
 
-        if args[6].get("x-shell-sender") != None:
-            print("Notification is from x-shell-sender, likely a duplicate.")
-            return
-
         # If there's no PID then just forget about it. Read this in NYC Mafia style tone for extra impact.
         pid = args[6].get("sender-pid")
         if pid == None:
@@ -61,6 +57,10 @@ def msg_cb(bus, msg):
         
         global ignore_notif_from
         if notification_from in ignore_notif_from:
+            return
+        
+        if args[6].get("x-shell-sender") != None:
+            print(f"Notification is from x-shell-sender, likely a duplicate. Detail [{summary}: {body}]")
             return
         
         print(f"PID: {pid}\nF: {notification_from}\nS: {summary}\nB: {body}")
@@ -123,7 +123,12 @@ def process_notification(notification_str, speechapp):
         espeak_parameters = ["-s", "200", "-g", "2", "-p", "40"]
         speak_command = ["espeak", *espeak_parameters, notification_str]
 
-    speak_process = subprocess.Popen(speak_command)
+    print(f"opening a subprocess: {speak_command}")
+    speak_process = subprocess.Popen(
+        speak_command,
+        stdout=subprocess.DEVNULL,  # Suppress stdout
+        stderr=subprocess.DEVNULL   # Suppress stderr
+    )
 
     # Create a keyboard listener to detect when the ESC key is pressed
     def on_press(key):
@@ -145,6 +150,7 @@ def process_notification(notification_str, speechapp):
 
     # Wait for the speak process to finish
     # so we don't play more than 1 notification at a time.
+    print("waiting for the speak process to finish")
     speak_process.wait()
 
     if speechapp == "polly":
@@ -218,7 +224,13 @@ def main(speechapp):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Read notifications using espeak or say.')
-    parser.add_argument('speechapp', choices=['espeak', 'say', 'polly'], help='Choose the speech synthesis utility (espeak, say or Amazon Polly).')
+    parser.add_argument(
+        'speechapp',
+        choices=['espeak', 'say', 'polly'],
+        nargs='?',
+        default='polly',
+        help='Choose the speech synthesis utility (espeak, say, or Amazon Polly). Default is polly.'
+    )
     args = parser.parse_args()
 
     main(args.speechapp)
